@@ -1,0 +1,276 @@
+✅ 1. A. Basic Data Handling Commands
+🔹 Explanation:
+Basic data handling in Python is done using the Pandas library. It is used to read datasets, view structure, and explore data.
+🔹 Code:
+Python
+import pandas as pd
+
+df = pd.read_csv("data.csv")
+
+print(df.head())      # Top 5 rows
+print(df.tail())      # Last 5 rows
+print(df.shape)       # Dimensions
+print(df.columns)     # Column names
+🔹 Explanation of Code:
+read_csv() → Reads dataset
+head() → Displays first 5 rows
+tail() → Displays last 5 rows
+shape → Shows number of rows & columns
+columns → Lists column names
+✅ 1. B. Hive Partition & Bucketing
+🔹 Explanation:
+Partitioning divides data based on a column (like category)
+Bucketing divides data into fixed number of files for efficient querying
+🔹 Code:
+SQL
+CREATE DATABASE shopping;
+USE shopping;
+
+CREATE TABLE shopping1 (
+  id INT,
+  product STRING,
+  price FLOAT
+)
+PARTITIONED BY (category STRING)
+CLUSTERED BY (id) INTO 3 BUCKETS
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ',';
+
+LOAD DATA LOCAL INPATH 'data.csv'
+INTO TABLE shopping1
+PARTITION (category='Electronics');
+
+SHOW PARTITIONS shopping1;
+🔹 Explanation of Code:
+PARTITIONED BY → splits data by category
+CLUSTERED BY → creates 3 buckets
+LOAD DATA → loads file
+SHOW PARTITIONS → verifies partitions
+✅ 2. A. Data Handling Operations
+🔹 Explanation:
+These operations are used to modify and combine datasets.
+🔹 Code:
+Python
+import pandas as pd
+
+df = pd.read_csv("data.csv")
+
+print(df.columns)
+
+df.rename(columns={"model year": "year"}, inplace=True)
+
+df2 = df.copy()
+
+df_rows = pd.concat([df, df2], axis=0)
+
+df_cols = pd.concat([df, df2], axis=1)
+
+print(df.isnull().sum())
+🔹 Explanation:
+rename() → change column names
+concat(axis=0) → add rows
+concat(axis=1) → add columns
+isnull() → find missing values
+✅ 2. B. Feature Extraction (Heatmap)
+🔹 Explanation:
+Correlation heatmap shows relationships between features.
+🔹 Code:
+Python
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+corr = df.corr()
+sns.heatmap(corr, annot=True)
+plt.show()
+🔹 Explanation:
+corr() → correlation matrix
+heatmap() → visualization
+✅ 3. A. Data Visualization (Iris Dataset)
+🔹 Explanation:
+Visualization helps understand data distribution and relationships.
+🔹 Code:
+Python
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+df = sns.load_dataset("iris")
+
+sns.boxplot(x='species', y='sepal_length', data=df)
+plt.show()
+
+sns.histplot(df['sepal_length'])
+plt.show()
+
+sns.scatterplot(x='petal_length', y='sepal_length', data=df)
+plt.show()
+🔹 Explanation:
+Boxplot → distribution
+Histogram → frequency
+Scatter → relationship
+✅ 3. B. LDA
+🔹 Explanation:
+LDA is used for dimensionality reduction and classification.
+🔹 Code:
+Python
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.datasets import load_iris
+
+data = load_iris()
+X = data.data
+y = data.target
+
+lda = LinearDiscriminantAnalysis(n_components=2)
+X_new = lda.fit_transform(X, y)
+🔹 Explanation:
+fit_transform() → reduces features
+✅ 4. Feature Construction
+🔹 Explanation:
+Feature construction transforms raw data into useful format.
+🔹 Code:
+Python
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+
+df = pd.read_csv("homeprices.csv")
+
+dummies = pd.get_dummies(df['town'])
+df = pd.concat([df, dummies], axis=1)
+
+le = LabelEncoder()
+df['town_encoded'] = le.fit_transform(df['town'])
+
+df['category'] = pd.cut(df['price'], bins=[0,100000,200000,300000])
+🔹 Explanation:
+Dummy → categorical to binary
+LabelEncoder → convert to numbers
+cut() → numeric to category
+✅ 5. Data Preprocessing
+🔹 Explanation:
+Preprocessing removes noise and improves data quality.
+🔹 Code:
+Python
+import numpy as np
+
+df.replace("?", np.nan, inplace=True)
+
+Q1 = df['mpg'].quantile(0.25)
+Q3 = df['mpg'].quantile(0.75)
+IQR = Q3 - Q1
+
+df = df[(df['mpg'] >= Q1 - 1.5*IQR) & (df['mpg'] <= Q3 + 1.5*IQR)]
+
+df.fillna(df.mean(), inplace=True)
+
+df['mpg'] = np.where(df['mpg'] > Q3, Q3, df['mpg'])
+🔹 Explanation:
+IQR → removes outliers
+fillna() → handles missing values
+Capping → limits extreme values
+✅ 6. Feature Extraction (PCA, LDA, SVD)
+🔹 Explanation:
+Used to reduce number of features.
+🔹 Code:
+Python
+from sklearn.decomposition import PCA
+import numpy as np
+from sklearn.datasets import load_iris
+
+data = load_iris()
+X = data.data
+
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X)
+
+U, S, Vt = np.linalg.svd(X, full_matrices=False)
+🔹 Explanation:
+PCA → reduces dimensions
+SVD → matrix decomposition
+✅ 7. A. HDFS Commands
+🔹 Explanation:
+HDFS stores data in distributed environment.
+🔹 Commands:
+Bash
+start-dfs.sh
+start-yarn.sh
+
+hdfs dfs -mkdir /data
+echo "Hello" > file.txt
+hdfs dfs -put file.txt /data
+hdfs dfs -cat /data/file.txt
+🔹 Explanation:
+mkdir → create directory
+put → upload file
+cat → view file
+✅ 7. B. Statistical Functions
+🔹 Explanation:
+Used for data analysis.
+🔹 Code:
+Python
+print(df.mean())
+print(df.median())
+print(df.mode())
+
+print(df.var())
+print(df.std())
+
+print(df.quantile([0.25,0.5,0.75]))
+✅ 8. MapReduce Word Count
+🔹 Explanation:
+Counts frequency of words.
+🔹 Code:
+Mapper:
+Python
+import sys
+for line in sys.stdin:
+    for word in line.split():
+        print(f"{word}\t1")
+Reducer:
+Python
+import sys
+from collections import defaultdict
+
+count = defaultdict(int)
+
+for line in sys.stdin:
+    word, num = line.split('\t')
+    count[word] += int(num)
+
+for word in count:
+    print(f"{word}\t{count[word]}")
+✅ 9. Hive Database
+🔹 Explanation:
+Used to create and manage tables in Hadoop.
+🔹 Code:
+SQL
+CREATE DATABASE shopping;
+USE shopping;
+
+CREATE TABLE shopping1 (
+  id INT,
+  product STRING,
+  price FLOAT
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ',';
+
+LOAD DATA LOCAL INPATH 'shop.txt'
+INTO TABLE shopping1;
+
+SELECT * FROM shopping1;
+✅ 10. MongoDB
+🔹 Explanation:
+MongoDB is a NoSQL database storing data in JSON format.
+🔹 Code:
+JavaScript
+use library
+
+db.createCollection("books")
+
+db.books.insertOne({name:"DBMS", price:500})
+db.books.insertMany([{name:"OS"}, {name:"CN"}])
+
+db.books.find()
+
+db.books.updateOne({name:"OS"}, {$set:{price:300}})
+
+db.books.deleteOne({name:"CN"})
